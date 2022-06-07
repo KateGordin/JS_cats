@@ -24,7 +24,7 @@ const secondReq = {
   encoding: "binary",
 };
 
-function createImages(firstRes, secondRes, width, height) {
+const createImages = (firstRes, secondRes, width, height) =>
   blend(
     [
       { buffer: Buffer.from(firstRes, "binary"), x: 0, y: 0 },
@@ -48,7 +48,6 @@ function createImages(firstRes, secondRes, width, height) {
       });
     }
   );
-}
 
 //Self-Invoking Anonymous Function
 (async function () {
