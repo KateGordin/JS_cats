@@ -1,6 +1,6 @@
 const { writeFile } = require("fs");
 const { join } = require("path");
-const request = require("request-promise");
+const axios = require("axios");
 const blend = require("@mapbox/blend");
 const argv = require("minimist")(process.argv.slice(2));
 
@@ -13,16 +13,8 @@ const {
   size = 100,
 } = argv;
 
-const firstReq = {
-  // https://cataas.com/cat/says/Hi%20There?width=500&amp;height=800&amp;c=Cyan&amp;s=150
-  url: `https://cataas.com/cat/says/${greeting}?width=${width}&height=${height}&color=${color}&s=${size}`,
-  encoding: "binary",
-};
-
-const secondReq = {
-  url: `https://cataas.com/cat/says/${who}?width=${width}&height=${height}&color=${color}&s=${size}`,
-  encoding: "binary",
-};
+const firstReq = `https://cataas.com/cat/says/${greeting}?width=${width}&height=${height}&color=${color}&s=${size}`;
+const secondReq = `https://cataas.com/cat/says/${who}?width=${width}&height=${height}&color=${color}&s=${size}`;
 
 const createImages = (firstRes, secondRes, width, height) =>
   blend(
@@ -52,11 +44,15 @@ const createImages = (firstRes, secondRes, width, height) =>
 //Self-Invoking Anonymous Function
 (async function () {
   try {
-    const firstRes = await request(firstReq);
-    const secondRes = await request(secondReq);
+    const firstRes = await axios.get(firstReq, {
+      responseType: "arraybuffer",
+    });
+    const secondRes = await axios.get(secondReq, {
+      responseType: "arraybuffer",
+    });
     console.log("myRes", firstRes, secondRes);
 
-    createImages(firstRes, secondRes, width, height);
+    createImages(firstRes.data, secondRes.data, width, height);
   } catch (err) {
     console.error(err);
     return;
